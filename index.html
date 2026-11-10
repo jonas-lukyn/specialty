@@ -40,8 +40,11 @@
   --roast: #4a2d1e;
   --stamp: #d23a76;
   --t-origin: #7c8f4c;
-  --t-proc: #2f6a6e;
-  --t-recipe: #6b3f26;
+  --t-proc: #4c7a26;
+  --proc-bg: #eef3e2;
+  --t-recipe: #e2b27a;
+  --recipe-bg: #3d2418;
+  --recipe-fg: #f7efe4;
   --t-equip: #20211d;
   --t-cust: #d23a76;
   --pc: #20211d;
@@ -184,7 +187,7 @@ button:focus-visible { outline: 3px solid var(--ink); }
 /* main layout */
 .main {
   display: grid;
-  grid-template-columns: minmax(340px, 450px) minmax(290px, 360px) minmax(0, 1fr);
+  grid-template-columns: minmax(360px, 520px) minmax(290px, 360px) minmax(0, 1fr);
   gap: 18px; margin-top: 16px; align-items: start;
 }
 @media (max-width: 1240px) {
@@ -199,9 +202,14 @@ button:focus-visible { outline: 3px solid var(--ink); }
 }
 
 /* active player */
-.me h2 { display: flex; align-items: baseline; gap: 10px; font-stretch: 112%; font-size: 22px; margin-bottom: 8px; }
-.me h2::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: var(--pc); align-self: center; }
-.me h2 .score { margin-left: auto; font-size: 15px; font-stretch: 100%; font-weight: 600; color: var(--ink-2); }
+.me .map-title { font-stretch: 118%; font-weight: 850; font-size: 20px; margin-bottom: 8px; }
+.tab-head { display: flex; align-items: baseline; gap: 10px; font-stretch: 112%; font-size: 20px; margin: 16px 0 6px; padding-top: 12px; border-top: 1.5px solid var(--line); }
+.tab-head::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: var(--pc); align-self: center; }
+.tab-head .score { margin-left: auto; font-size: 15px; font-stretch: 100%; font-weight: 600; color: var(--ink-2); }
+.batch-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.batch-list li { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.batch-list li small { font-weight: 400; color: var(--ink-2); font-size: 12.5px; }
+.batch-list.small li { font-size: 13px; gap: 6px; }
 .me .board { width: 100%; height: auto; display: block; }
 .tableau { margin-top: 10px; }
 .tableau h4 { font-size: 13px; color: var(--ink-2); font-weight: 600; margin: 10px 0 6px; }
@@ -253,10 +261,10 @@ button:focus-visible { outline: 3px solid var(--ink); }
 .roastery-row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
 .spots { display: flex; gap: 8px; }
 .spot {
-  width: 40px; height: 40px; border-radius: 50%; border: 2px dashed var(--ink-3);
+  width: 40px; height: 40px; border-radius: 50%; border: 2.5px dashed var(--c, var(--ink-3));
   display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff;
 }
-.spot.taken { border: 2px solid var(--ink); }
+.spot.taken { background: var(--c); border: 2.5px solid var(--ink); }
 .sublabel { font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; }
 .deck {
   width: 108px; min-height: 104px; border-radius: 6px; border: 1.5px solid var(--ink);
@@ -276,15 +284,20 @@ button:focus-visible { outline: 3px solid var(--ink); }
 .card .cname { font-size: 13.5px; font-weight: 700; line-height: 1.2; }
 .card .cfoot { margin-top: auto; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
 .card.t-origin { --tc: var(--t-origin); }
-.card.t-processing { --tc: var(--t-proc); }
-.card.t-recipe { --tc: var(--t-recipe); }
+.card.t-processing { --tc: var(--t-proc); background: var(--proc-bg); }
+.card.t-recipe { --tc: var(--t-recipe); background: var(--recipe-bg); border-color: var(--recipe-bg); color: var(--recipe-fg); }
+.card.t-recipe .cname { color: var(--recipe-fg); }
+.card.t-recipe .mv { color: var(--recipe-fg); }
+.card.t-recipe .owner { color: #e9dccb; }
+.card .ctype { display: inline-flex; align-items: center; gap: 4px; }
+.ticon { width: 12px; height: 12px; flex: none; }
 .card.t-equipment { --tc: var(--t-equip); }
 .card.t-customer { --tc: var(--t-cust); }
 .card.t-customer .cname { font-size: 24px; font-stretch: 112%; font-weight: 850; letter-spacing: -0.01em; }
 .card .owner { font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; color: var(--ink-2); }
 .card .owner i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .card.small { width: 96px; min-height: 0; padding: 7px 7px 6px; }
-.card.hl, .card:hover { background: #fff; }
+.card[role="button"]:hover { outline: 2px solid var(--ink); outline-offset: 1px; }
 .card.slot-empty { border: 1.5px dashed var(--ink-3); background: transparent; color: var(--ink-3); font-size: 12px; justify-content: center; align-items: center; }
 .mv {
   display: inline-flex; align-items: center; gap: 1px; padding: 1px 5px 1px 3px;
@@ -307,9 +320,6 @@ button:focus-visible { outline: 3px solid var(--ink); }
 .stamp rect { fill: rgba(210, 58, 118, .08); stroke: var(--stamp); stroke-width: 2.2; }
 .stamp text { fill: var(--stamp); font-weight: 800; }
 .stamp.hl rect { fill: rgba(210, 58, 118, .28); stroke-width: 4; }
-.bean circle.body { stroke-width: 3.5; }
-.bean.unroasted circle.body { fill: var(--bean); }
-.bean.roasted circle.body { fill: var(--roast); }
 .bean text { font-weight: 800; }
 .bean.unroasted text { fill: var(--ink); }
 .bean.roasted text { fill: #fff; }
@@ -331,15 +341,21 @@ button:focus-visible { outline: 3px solid var(--ink); }
 .others { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
 .other {
   background: var(--sheet); border: 1.5px solid var(--line); border-top: 6px solid var(--pc);
-  border-radius: var(--radius); padding: 10px 12px; display: grid; grid-template-columns: 150px 1fr; gap: 10px;
+  border-radius: var(--radius); padding: 10px 12px; display: grid; gap: 8px;
 }
 .other h4 { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 8px; font-size: 16px; font-stretch: 112%; }
 .other h4 .score { margin-left: auto; font-size: 14px; font-weight: 700; font-stretch: 100%; }
-.other .board { width: 150px; height: auto; display: block; }
 .other .meta { font-size: 12.5px; color: var(--ink-2); display: grid; gap: 6px; align-content: start; }
 .other .meta b { color: var(--ink); display: block; font-size: 12px; }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 .chip { font-size: 12px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--line); background: var(--cell); color: var(--ink); }
+.chip-recipe { background: var(--recipe-bg); border-color: var(--recipe-bg); color: var(--recipe-fg); }
+.bean-legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--ink-2); margin-top: 6px; }
+.bean-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.tsw { width: 8px; align-self: stretch; border-radius: 3px; flex: none; }
+.tsw.t-processing { background: var(--t-proc); }
+.tsw.t-recipe { background: var(--recipe-bg); }
+.tsw.t-equipment { background: var(--t-equip); }
 .log { background: var(--sheet); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 10px 12px; max-height: 420px; overflow: auto; }
 .log ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .log li { font-size: 13px; display: grid; grid-template-columns: 12px 1fr; gap: 6px; align-items: start; }
@@ -367,7 +383,7 @@ dialog {
   padding: 0; max-width: min(760px, calc(100vw - 24px));
 }
 dialog::backdrop { background: rgba(32, 33, 29, .55); }
-#confirm form { padding: 22px 24px; }
+#confirm .confirm-body { padding: 22px 24px; }
 #confirm h2 { font-stretch: 112%; font-size: 21px; margin-bottom: 8px; }
 .dialog-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
 .rules { padding: 0 26px 24px; max-height: calc(100vh - 60px); overflow: auto; }
@@ -398,14 +414,14 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   <div id="toast" role="status" aria-live="polite"></div>
 
   <dialog id="confirm" aria-labelledby="confirm-title">
-    <form method="dialog">
+    <div class="confirm-body">
       <h2 id="confirm-title">Začít novou hru?</h2>
       <p>Rozehraná hra se ztratí.</p>
       <div class="dialog-actions">
-        <button value="cancel" class="btn">Hrát dál</button>
-        <button value="ok" class="btn btn-primary">Začít novou hru</button>
+        <button type="button" class="btn" data-confirm="cancel">Hrát dál</button>
+        <button type="button" class="btn btn-primary" data-confirm="ok">Začít novou hru</button>
       </div>
-    </form>
+    </div>
   </dialog>
 
   <dialog id="rules" aria-labelledby="rules-title">
@@ -417,15 +433,15 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 
       <p class="rules-lead">Každý vede malou pražírnu výběrové kávy. Kávu z různých zemí zpracováním a pražením ladíš tak, aby chutnala přesně podle přání zákazníků. Kdo první získá <b>20 bodů</b>, spustí konec hry.</p>
 
-      <h3>Chuťová mřížka</h3>
-      <p>Každý hráč má mřížku 7×7. Vodorovně je <b>Ovocnost</b> (doprava víc), svisle <b>Tělo</b> (nahoru plnější). Leží na ní tvoje dvě šarže kávy, A a B. Pozice se zapisuje jako (Ovocnost, Tělo). Růžové rámečky ukazují, kde na mřížce sedí chuť zákazníků z Kavárny. Šarže nikdy nevyjede z mřížky – posun se zastaví na okraji.</p>
-      <p>Světle zelené zrno = neupražená káva, může se hýbat. Hnědé zrno = upražená káva, už se nehýbe a dá se prodat.</p>
+      <h3>Chuťová mapa</h3>
+      <p>Všichni hrají na jedné společné mřížce 7×7. Vodorovně je <b>Ovocnost</b> (doprava víc), svisle <b>Tělo</b> (nahoru plnější). Každý hráč na ní má dvě šarže kávy – žetony ve své barvě s čísly 1 a 2. Na jednom poli může stát víc žetonů, navzájem se neblokují. Pozice se zapisuje jako (Ovocnost, Tělo). Růžové rámečky ukazují, kde na mřížce sedí chuť zákazníků z Kavárny. Šarže nikdy nevyjede z mřížky – posun se zastaví na okraji.</p>
+      <p>Světlý žeton = neupražená káva, může se hýbat. Plný žeton s tmavým okrajem = upražená káva, už se nehýbe a dá se prodat.</p>
 
       <h3>Tvůj tah</h3>
-      <p>Máš <b>2 akce</b>. Každá akce znamená poslat baristu na jedno ze tří míst. Na Farmu a do Kavárny můžeš poslat oba baristy, do Pražírny jen jednoho. Po kole se baristé vracejí a začíná další hráč v pořadí.</p>
+      <p>Máš <b>2 akce</b>. Každá akce znamená poslat baristu na jedno ze tří míst. Na Farmu a do Kavárny můžeš poslat oba baristy, do Pražírny jen jednoho – máš tam jedno vlastní místo. Po kole se baristé vracejí a začíná další hráč v pořadí.</p>
 
       <h3>Farma</h3>
-      <p>Vezmi jednu kartu z řady, nebo lízni naslepo z balíčku. Místo toho můžeš kartu z řady také odhodit.</p>
+      <p>Na Farmě leží vždy 4 karty. Vezmi jednu z nich, nebo lízni naslepo z balíčku. Místo toho můžeš celou řadu spláchnout: všechny 4 karty jdou do odhozu a vyloží se nové (kartu si přitom nebereš).</p>
       <ul>
         <li><b>Zpracování</b> se použije hned: posune jednu tvou neupraženou šarži.</li>
         <li><b>Recept pražení</b> je trvalý. Buď si ho necháš (používáš ho jen ty), nebo ho dáš na Pražírnu – pak ho může použít kdokoli a soupeři ti za každé použití platí 1 bod. Na Pražírně leží nejvýš 2 recepty, třetí vytlačí nejstarší.</li>
@@ -433,7 +449,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       </ul>
 
       <h3>Pražírna</h3>
-      <p>Míst je o jedno méně, než je hráčů. Upraž jednu šarži: základním pražením (bez posunu), svým receptem, nebo veřejným receptem za 1 bod jeho majiteli. Upražená káva musí odpočinout – ve stejném tahu ji prodat nemůžeš.</p>
+      <p>Každý hráč má v Pražírně jedno vlastní místo, takže praží jednou za kolo a nikdo ho nemůže zablokovat. Upraž jednu šarži: základním pražením (bez posunu), svým receptem, nebo veřejným receptem za 1 bod jeho majiteli. Upražená káva musí odpočinout – ve stejném tahu ji prodat nemůžeš.</p>
 
       <h3>Kavárna</h3>
       <p>Prodej upraženou šarži.</p>
@@ -479,6 +495,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 
   var GOAL = 20;
   var SIZE = 7;
+  var MARKET_SIZE = 4;
+  var PROCESSING_MULTIPLIER = 2; // each processing card exists 2x its listed copies
 
   var PREP = { V: 'V60', A: 'AeroPress', E: 'Espresso', F: 'French press' };
 
@@ -538,7 +556,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     });
     var n = 0;
     PROCESSING.forEach(function (p) {
-      for (var k = 0; k < p[3]; k++) {
+      for (var k = 0; k < p[3] * PROCESSING_MULTIPLIER; k++) {
         var id = 'p' + (++n);
         CARDS[id] = { id: id, type: 'processing', name: p[0], dx: p[1], dy: p[2], desc: p[4] };
         DECK_IDS.main.push(id);
@@ -649,7 +667,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     if (!players || players.length < 2 || players.length > 5) fail('Hra je pro 2–5 hráčů.');
     var seed = (opts.seed === undefined ? Math.floor(Math.random() * 4294967296) : opts.seed) >>> 0;
     var s = {
-      version: 1,
+      version: 2,
       rng: seed,
       n: players.length,
       players: players.map(function (p, i) {
@@ -676,12 +694,10 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     s.decks.origin = shuffle(s, DECK_IDS.origin);
     s.decks.main = shuffle(s, DECK_IDS.main);
     s.decks.customer = shuffle(s, DECK_IDS.customer);
-    for (var i = 0; i < s.n + 1; i++) {
-      s.market.push(draw(s, 'main'));
-      s.customers.push(draw(s, 'customer'));
-    }
+    for (var i = 0; i < MARKET_SIZE; i++) s.market.push(draw(s, 'main'));
+    for (var j = 0; j < s.n + 1; j++) s.customers.push(draw(s, 'customer'));
     s.players.forEach(function (p) {
-      ['A', 'B'].forEach(function (bid) {
+      ['1', '2'].forEach(function (bid) {
         var o = draw(s, 'origin');
         p.batches.push({ id: bid, origin: o, x: CARDS[o].x, y: CARDS[o].y, roasted: false, roastedTurn: null });
       });
@@ -704,8 +720,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     }
     if (place === 'roastery') {
       var here = s.placements.filter(function (x) { return x.place === 'roastery'; });
-      if (here.some(function (x) { return x.player === p.id; })) return { ok: false, reason: 'V Pražírně už máš baristu.' };
-      if (here.length >= roasterySpots(s)) return { ok: false, reason: 'Pražírna je plná.' };
+      if (here.some(function (x) { return x.player === p.id; })) return { ok: false, reason: 'V tomto kole už jsi pražil. Své místo v Pražírně máš obsazené.' };
       if (!unroasted(p).length) return { ok: false, reason: 'Nemáš žádnou neupraženou šarži.' };
       return { ok: true };
     }
@@ -719,7 +734,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     return { ok: false, reason: 'Neznámé místo.' };
   }
 
-  function roasterySpots(s) { return Math.max(1, s.n - 1); }
+  // Every player has one personal spot in the roastery: at most one roast per round, no blocking.
+  function roasterySpots(s) { return s.n; }
 
   function roastOptions(s, playerId) {
     var p = s.players[playerId];
@@ -844,16 +860,18 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     return id;
   }
 
-  /** Farm: discard a card from the market row. */
-  function farmDiscard(s, idx) {
+  /** Farm: flush the whole market row (all cards to discard, deal a new row). */
+  function farmFlush(s) {
     assertPlace(s, 'farm');
-    var id = s.market[idx];
-    if (!id) fail('Na tomto místě není karta.');
-    s.discard.main.push(id);
-    s.market[idx] = draw(s, 'main');
+    var old = s.market.filter(Boolean);
+    if (!old.length) fail('Na Farmě není co spláchnout.');
+    // deal the new row first, so the flushed cards cannot come straight back
+    s.market = [];
+    for (var i = 0; i < MARKET_SIZE; i++) s.market.push(draw(s, 'main'));
+    old.forEach(function (id) { s.discard.main.push(id); });
     placeBarista(s, 'farm');
     var p = current(s);
-    log(s, p.name + ' odhazuje z řady na Farmě: ' + CARDS[id].name + '.', p.id);
+    log(s, p.name + ' splachuje celou řadu na Farmě (' + old.length + ' karty do odhozu) a vykládá novou.', p.id);
     finishAction(s);
   }
 
@@ -976,7 +994,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     createGame: createGame,
     placeStatus: placeStatus, roasterySpots: roasterySpots,
     roastOptions: roastOptions, saleOptions: saleOptions,
-    farmTake: farmTake, farmDiscard: farmDiscard,
+    farmTake: farmTake, farmFlush: farmFlush, MARKET_SIZE: MARKET_SIZE,
     resolveProcessing: resolveProcessing, resolveRecipe: resolveRecipe,
     roast: roast, sell: sell, passTurn: passTurn,
     current: current, unroasted: unroasted, sellable: sellable, isResting: isResting,
@@ -1019,7 +1037,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   function loadSave() {
     try {
       var s = JSON.parse(read(SAVE_KEY));
-      if (s && s.version === 1 && !s.gameOver) return s;
+      if (s && s.version === 2 && !s.gameOver) return s;
     } catch (e) { /* ignore */ }
     return null;
   }
@@ -1037,6 +1055,10 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   function cur() { return S.current(game); }
 
   var TYPE_LABEL = { origin: 'Původ', processing: 'Zpracování', recipe: 'Recept pražení', equipment: 'Vybavení', customer: 'Zákazník' };
+  var TYPE_ICON = {
+    processing: '<svg class="ticon" viewBox="0 0 14 14" aria-hidden="true"><circle cx="6.5" cy="8.6" r="4.1" fill="currentColor"/><path d="M6.8 4.6c.1-1.6 1.2-2.7 3.4-3.1" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+    recipe: '<svg class="ticon" viewBox="0 0 14 14" aria-hidden="true"><path d="M7.2 1.2c.6 2.3 3.6 3.7 3.6 7.1A3.8 3.8 0 0 1 3.2 8.6c0-1.7.9-2.8 1.8-3.6.1 1.3.8 2.1 1.5 2.3-.3-1.9.1-4.1.7-6.1z" fill="currentColor"/></svg>'
+  };
 
   function arrow(dir) {
     var paths = {
@@ -1070,7 +1092,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     } else if (c.type === 'equipment') {
       body = '<span class="ctype">Vybavení</span><strong class="cname">' + esc(c.name) + '</strong><span class="cfoot">' + prep(c.prep, false) + '</span>';
     } else {
-      body = '<span class="ctype">' + TYPE_LABEL[c.type] + '</span><strong class="cname">' + esc(c.name) + '</strong><span class="cfoot">' + moves(c) + '</span>';
+      body = '<span class="ctype">' + (TYPE_ICON[c.type] || '') + TYPE_LABEL[c.type] + '</span><strong class="cname">' + esc(c.name) + '</strong><span class="cfoot">' + moves(c) + '</span>';
     }
     if (opts.owner !== undefined && opts.owner !== null) {
       var o = game.players[opts.owner];
@@ -1080,75 +1102,139 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     return '<div class="card t-' + c.type + (opts.small ? ' small' : '') + '" title="' + esc(title) + '"' + attrs + '>' + body + '</div>';
   }
 
-  // ------------------------------------------------------------------ boards
+  // ------------------------------------------------------------------ shared flavour map
+  // Where k tokens sit inside one cell (fractions of the cell) and how big they are.
+  function slots(k) {
+    if (k <= 1) return { r: 0.32, pos: [[0.5, 0.5]] };
+    if (k === 2) return { r: 0.25, pos: [[0.33, 0.33], [0.67, 0.67]] };
+    if (k <= 4) return { r: 0.2, pos: [[0.28, 0.28], [0.72, 0.28], [0.28, 0.72], [0.72, 0.72]] };
+    var cols = k <= 9 ? 3 : 4, rows = Math.ceil(k / cols), pos = [];
+    for (var i = 0; i < k; i++) pos.push([((i % cols) + 0.5) / cols, (Math.floor(i / cols) + 0.5) / rows]);
+    return { r: 0.38 / Math.max(cols, rows), pos: pos };
+  }
+
   /**
-   * @param p player
-   * @param o {cell, axes, previews:[{key,x1,y1,x2,y2}], pick: fn(batch)->bool, id}
+   * One flavour map shared by all players: customers + every player's batch tokens.
+   * @param o {cell, previews:[{key, batch, x2, y2}], pick: fn(batch)->bool}
    */
-  function boardSVG(p, o) {
+  function mapSVG(o) {
     var cell = o.cell;
-    var L = o.axes ? 30 : 2, T = o.axes ? 6 : 2, B = o.axes ? 38 : 2, R = o.axes ? 6 : 2;
+    var me = cur();
+    var L = 30, T = 6, B = 38, R = 6;
     var W = L + 7 * cell + R, H = T + 7 * cell + B;
     function cx(x) { return L + (x - 0.5) * cell; }
     function cy(y) { return T + (7 - y + 0.5) * cell; }
+    function left(x) { return L + (x - 1) * cell; }
+    function top(y) { return T + (7 - y) * cell; }
     var s = [];
-    s.push('<svg class="board" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Chuťová mřížka – ' + esc(p.name) + '">');
-    s.push('<defs><marker id="ah-' + o.id + '" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + p.color + '"/></marker></defs>');
+    s.push('<svg class="board" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Společná chuťová mapa">');
+    s.push('<defs><marker id="ah-map" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + me.color + '"/></marker></defs>');
     for (var y = 1; y <= 7; y++) {
       for (var x = 1; x <= 7; x++) {
-        s.push('<rect class="cellr" x="' + (L + (x - 1) * cell) + '" y="' + (T + (7 - y) * cell) + '" width="' + cell + '" height="' + cell + '"/>');
+        s.push('<rect class="cellr" x="' + left(x) + '" y="' + top(y) + '" width="' + cell + '" height="' + cell + '"/>');
       }
     }
     s.push('<rect class="frame" x="' + L + '" y="' + T + '" width="' + 7 * cell + '" height="' + 7 * cell + '"/>');
-    if (o.axes) {
-      for (var i = 1; i <= 7; i++) {
-        s.push('<text class="axis" x="' + cx(i) + '" y="' + (T + 7 * cell + 15) + '" text-anchor="middle">' + i + '</text>');
-        s.push('<text class="axis" x="' + (L - 11) + '" y="' + (cy(i) + 4) + '" text-anchor="middle">' + i + '</text>');
-      }
-      s.push('<text class="axis-title" x="' + (L + 3.5 * cell) + '" y="' + (T + 7 * cell + 33) + '" text-anchor="middle">Ovocnost →</text>');
-      s.push('<text class="axis-title" x="10" y="' + (T + 3.5 * cell) + '" text-anchor="middle" transform="rotate(-90 10 ' + (T + 3.5 * cell) + ')">Tělo →</text>');
+    for (var i = 1; i <= 7; i++) {
+      s.push('<text class="axis" x="' + cx(i) + '" y="' + (T + 7 * cell + 15) + '" text-anchor="middle">' + i + '</text>');
+      s.push('<text class="axis" x="' + (L - 11) + '" y="' + (cy(i) + 4) + '" text-anchor="middle">' + i + '</text>');
     }
+    s.push('<text class="axis-title" x="' + (L + 3.5 * cell) + '" y="' + (T + 7 * cell + 33) + '" text-anchor="middle">Ovocnost →</text>');
+    s.push('<text class="axis-title" x="10" y="' + (T + 3.5 * cell) + '" text-anchor="middle" transform="rotate(-90 10 ' + (T + 3.5 * cell) + ')">Tělo →</text>');
+
     // customers on display
     game.customers.forEach(function (cid) {
       if (!cid) return;
       var c = C[cid];
-      var sz = cell * 0.84;
-      var fs = Math.max(8, cell * 0.24);
+      var sz = cell * 0.9;
+      var fs = Math.max(8, cell * 0.2);
       s.push('<g class="stamp" data-stamp="' + cid + '"><rect x="' + (cx(c.x) - sz / 2) + '" y="' + (cy(c.y) - sz / 2) + '" width="' + sz + '" height="' + sz + '" rx="' + cell * 0.12 + '"/>' +
-        '<text x="' + (cx(c.x) + sz / 2 - fs * 0.45) + '" y="' + (cy(c.y) + sz / 2 - fs * 0.35) + '" font-size="' + fs + '" text-anchor="end">' + c.prep + '</text></g>');
+        '<text x="' + (cx(c.x) + sz / 2 - fs * 0.35) + '" y="' + (cy(c.y) + sz / 2 - fs * 0.3) + '" font-size="' + fs + '" text-anchor="end">' + c.prep + '</text></g>');
     });
-    // previews
+
+    // place every token: group by cell, players in id order, batch 1 before 2
+    var groups = {};
+    game.players.forEach(function (pl) {
+      pl.batches.forEach(function (b) {
+        var key = b.x + ',' + b.y;
+        (groups[key] = groups[key] || []).push({ p: pl, b: b });
+      });
+    });
+    var placed = [];
+    var myPos = {};
+    Object.keys(groups).forEach(function (key) {
+      var list = groups[key];
+      var sl = slots(list.length);
+      list.forEach(function (t, idx) {
+        var pos = sl.pos[idx];
+        var item = { p: t.p, b: t.b, x: left(t.b.x) + pos[0] * cell, y: top(t.b.y) + pos[1] * cell, r: sl.r * cell };
+        placed.push(item);
+        if (t.p.id === me.id) myPos[t.b.id] = item;
+      });
+    });
+
+    // move previews for the player on turn
     (o.previews || []).forEach(function (pv) {
-      var ax1 = cx(pv.x1), ay1 = cy(pv.y1), ax2 = cx(pv.x2), ay2 = cy(pv.y2);
+      var from = myPos[pv.batch];
+      if (!from) return;
+      var ax1 = from.x, ay1 = from.y, ax2 = cx(pv.x2), ay2 = cy(pv.y2);
       var g = '<g class="pv" data-pv="' + pv.key + '">';
       var dx = ax2 - ax1, dy = ay2 - ay1, d = Math.sqrt(dx * dx + dy * dy);
-      if (d > 0) {
-        var sh = cell * 0.36;
-        g += '<line x1="' + (ax1 + dx / d * sh) + '" y1="' + (ay1 + dy / d * sh) + '" x2="' + (ax2 - dx / d * sh) + '" y2="' + (ay2 - dy / d * sh) + '" stroke="' + p.color + '" stroke-width="3.5" marker-end="url(#ah-' + o.id + ')"/>';
+      if (d > cell * 0.3) {
+        var sh = cell * 0.3;
+        g += '<line x1="' + (ax1 + dx / d * from.r) + '" y1="' + (ay1 + dy / d * from.r) + '" x2="' + (ax2 - dx / d * sh) + '" y2="' + (ay2 - dy / d * sh) + '" stroke="' + me.color + '" stroke-width="3.5" marker-end="url(#ah-map)"/>';
       }
-      g += '<circle cx="' + ax2 + '" cy="' + ay2 + '" r="' + cell * 0.32 + '" stroke="' + p.color + '" fill="' + p.color + '" fill-opacity="0.22"/>';
+      g += '<circle cx="' + ax2 + '" cy="' + ay2 + '" r="' + cell * 0.3 + '" stroke="' + me.color + '" fill="' + me.color + '" fill-opacity="0.22"/>';
       g += '</g>';
       s.push(g);
     });
-    // batches (offset when both share a cell)
-    var same = p.batches.length === 2 && p.batches[0].x === p.batches[1].x && p.batches[0].y === p.batches[1].y;
-    p.batches.forEach(function (b, idx) {
-      var off = same ? (idx === 0 ? -1 : 1) * cell * 0.16 : 0;
-      var r = cell * (same ? 0.26 : 0.32);
-      var bx = cx(b.x) + off, by = cy(b.y) + off;
+
+    // tokens: other players first, the player on turn on top
+    placed.sort(function (a, b2) { return (a.p.id === me.id) - (b2.p.id === me.id); });
+    placed.forEach(function (t) {
+      var b = t.b, mine = t.p.id === me.id;
       var resting = S.isResting(game, b);
-      var pickable = o.pick && o.pick(b);
-      var cls = 'bean ' + (b.roasted ? 'roasted' : 'unroasted') + (pickable ? ' pickable' : '');
-      var label = 'Šarže ' + b.id + ' ' + xy(b) + (b.roasted ? (resting ? ', upražená, odpočívá' : ', upražená') : ', neupražená');
+      var pickable = mine && o.pick && o.pick(b);
+      var cls = 'bean ' + (b.roasted ? 'roasted' : 'unroasted') + (pickable ? ' pickable' : '') + (mine ? ' mine' : '');
+      var label = t.p.name + ', šarže ' + b.id + ' ' + xy(b) + (b.roasted ? (resting ? ', upražená, odpočívá' : ', upražená') : ', neupražená');
       var attrs = pickable ? ' data-act="boardbatch" data-batch="' + b.id + '"' : '';
       var g = '<g class="' + cls + '"' + attrs + '><title>' + esc(label) + '</title>';
-      if (resting) g += '<circle class="rest" cx="' + bx + '" cy="' + by + '" r="' + (r + cell * 0.09) + '"/>';
-      g += '<circle class="body" cx="' + bx + '" cy="' + by + '" r="' + r + '" stroke="' + p.color + '"/>';
-      g += '<text x="' + bx + '" y="' + (by + r * 0.36) + '" text-anchor="middle" font-size="' + (r * 1.0) + '">' + b.id + '</text></g>';
+      if (resting) g += '<circle class="rest" cx="' + t.x + '" cy="' + t.y + '" r="' + (t.r + cell * 0.06) + '"/>';
+      g += tokenShapes(t.x, t.y, t.r, t.p.color, b.roasted);
+      g += '<text x="' + t.x + '" y="' + (t.y + t.r * 0.38) + '" text-anchor="middle" font-size="' + (t.r * 1.08) + '">' + b.id + '</text></g>';
       s.push(g);
     });
     s.push('</svg>');
     return s.join('');
+  }
+
+  function tokenIcon(color, b, size) {
+    size = size || 22;
+    var svg = '<svg viewBox="0 0 30 30" width="' + size + '" height="' + size + '" aria-hidden="true">';
+    if (S.isResting(game, b)) svg += '<circle cx="15" cy="15" r="13.5" style="fill:none;stroke:var(--ink-2);stroke-width:1.6;stroke-dasharray:3 3"/>';
+    svg += tokenShapes(15, 15, 10.5, color, b.roasted);
+    svg += '<text x="15" y="19" text-anchor="middle" font-size="11" font-weight="800" fill="' + (b.roasted ? '#fff' : 'var(--ink)') + '">' + b.id + '</text></svg>';
+    return svg;
+  }
+
+  // Batch token: player colour; pale = unroasted, solid with a dark roast ring = roasted.
+  function tokenShapes(x, y, r, color, roasted) {
+    if (roasted) {
+      return '<circle class="body" cx="' + x + '" cy="' + y + '" r="' + r + '" style="fill:' + color + ';stroke:var(--roast);stroke-width:' + Math.max(2.5, r * 0.2) + '"/>';
+    }
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" style="fill:#fff"/>' +
+      '<circle class="body" cx="' + x + '" cy="' + y + '" r="' + r + '" style="fill:' + color + ';fill-opacity:.28;stroke:' + color + ';stroke-width:' + Math.max(2.5, r * 0.18) + '"/>';
+  }
+
+  function tokenLegend(color) {
+    function one(kind, label) {
+      var svg = '<svg viewBox="0 0 30 30" width="22" height="22" aria-hidden="true">';
+      if (kind === 'rest') svg += '<circle class="rest" cx="15" cy="15" r="13.5" style="fill:none;stroke:var(--ink-2);stroke-width:1.6;stroke-dasharray:3 3"/>';
+      svg += tokenShapes(15, 15, 10.5, color, kind !== 'raw');
+      svg += '<text x="15" y="19" text-anchor="middle" font-size="11" font-weight="800" fill="' + (kind === 'raw' ? 'var(--ink)' : '#fff') + '">1</text></svg>';
+      return '<span>' + svg + label + '</span>';
+    }
+    return '<div class="bean-legend">' + one('raw', 'neupražená') + one('roasted', 'upražená') + one('rest', 'odpočívá, prodej až příští tah') + '</div>';
   }
 
   // ------------------------------------------------------------------ setup screen
@@ -1203,8 +1289,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     var cu3 = c(6, 2);
     s += '<rect x="' + (cu3[0] - 24) + '" y="' + (cu3[1] - 24) + '" width="48" height="48" rx="7" fill="rgba(210,58,118,.1)" stroke="#d23a76" stroke-width="2.4"/><text x="' + (cu3[0] + 18) + '" y="' + (cu3[1] + 19) + '" text-anchor="end" font-size="13" font-weight="800" fill="#d23a76">V</text>';
     s += '<path class="demo-arrow" d="M' + (st[0] + 14) + ' ' + (st[1] - 14) + ' L' + (cu[0] - 16) + ' ' + (cu[1] + 16) + '" stroke="#1f6fd1" stroke-width="3" fill="none" stroke-linecap="round"/>';
-    s += '<g class="demo-bean"><circle cx="' + st[0] + '" cy="' + st[1] + '" r="18" fill="#b5c27b" stroke="#1f6fd1" stroke-width="3.5"/><text x="' + st[0] + '" y="' + (st[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="800" fill="#20211d">A</text></g>';
-    s += '<g><circle cx="' + c(3, 5)[0] + '" cy="' + c(3, 5)[1] + '" r="18" fill="#4a2d1e" stroke="#1f6fd1" stroke-width="3.5"/><text x="' + c(3, 5)[0] + '" y="' + (c(3, 5)[1] + 6) + '" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">B</text></g>';
+    s += '<g class="demo-bean">' + tokenShapes(st[0], st[1], 18, COLORS[0], false) + '<text x="' + st[0] + '" y="' + (st[1] + 6) + '" text-anchor="middle" font-size="18" font-weight="800" fill="#20211d">1</text></g>';
+    s += '<g>' + tokenShapes(c(3, 5)[0], c(3, 5)[1], 18, COLORS[0], true) + '<text x="' + c(3, 5)[0] + '" y="' + (c(3, 5)[1] + 6) + '" text-anchor="middle" font-size="18" font-weight="800" fill="#fff">2</text></g>';
     return s + '</svg>';
   }
 
@@ -1282,7 +1368,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       var card = C[pend.card];
       S.unroasted(p).forEach(function (b) {
         var to = S.moved(b, card);
-        previews.push({ key: 'b-' + b.id, x1: b.x, y1: b.y, x2: to.x, y2: to.y });
+        previews.push({ key: 'b-' + b.id, batch: b.id, x2: to.x, y2: to.y });
       });
       pick = function (b) { return !b.roasted; };
     } else if (ui.mode === 'roast') {
@@ -1291,7 +1377,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
         var b = S.findBatch(p, ui.batch);
         S.roastOptions(game, p.id).forEach(function (opt, i) {
           var to = opt.card ? S.moved(b, C[opt.card]) : { x: b.x, y: b.y };
-          previews.push({ key: 'r-' + i, x1: b.x, y1: b.y, x2: to.x, y2: to.y });
+          previews.push({ key: 'r-' + i, batch: b.id, x2: to.x, y2: to.y });
         });
       }
     } else if (ui.mode === 'sell' && !ui.batch) {
@@ -1299,11 +1385,17 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     }
     var recipes = p.recipes.length ? p.recipes.map(function (id) { return cardHTML(id, { small: true }); }).join('') : '<span class="empty">Zatím žádné.</span>';
     var equip = p.equipment.length ? p.equipment.map(function (id) { return cardHTML(id, { small: true }); }).join('') : '<span class="empty">Zatím žádné.</span>';
-    return '<section class="me" aria-label="Hráč na tahu">' +
-      '<h2>' + esc(p.name) + '<span class="score">' + pts(p.score) + '</span></h2>' +
-      boardSVG(p, { cell: 56, axes: true, previews: previews, pick: pick, id: 'me' }) +
-      '<div class="tableau"><h4>Moje recepty pražení</h4><div class="cards">' + recipes + '</div>' +
-      '<h4>Moje vybavení</h4><div class="cards">' + equip + '</div></div></section>';
+    var mine = p.batches.map(function (b) {
+      return '<li>' + tokenIcon(p.color, b) + '<span>Šarže ' + b.id + ' ' + xy(b) + ' <small>' + esc(C[b.origin].name) + ', ' +
+        (b.roasted ? (S.isResting(game, b) ? 'upražená, odpočívá' : 'upražená') : 'neupražená') + '</small></span></li>';
+    }).join('');
+    return '<section class="me" aria-label="Chuťová mapa">' +
+      '<h2 class="map-title">Chuťová mapa</h2>' +
+      mapSVG({ cell: 64, previews: previews, pick: pick }) + tokenLegend(p.color) +
+      '<div class="tableau"><h3 class="tab-head">' + esc(p.name) + '<span class="score">' + pts(p.score) + '</span></h3>' +
+      '<ul class="batch-list">' + mine + '</ul>' +
+      '<h4>Recepty pražení</h4><div class="cards">' + recipes + '</div>' +
+      '<h4>Vybavení</h4><div class="cards">' + equip + '</div></div></section>';
   }
 
   function placeWorkers(place) {
@@ -1319,22 +1411,18 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       return cardHTML(id, { attrs: farmOk && id ? ' data-act="mode" data-mode="farm" role="button" tabindex="0" style="cursor:pointer"' : '' });
     }).join('');
     var deckCount = game.decks.main.length;
-    var farm = '<section class="place" aria-label="Farma"><div class="place-head"><h3>Farma</h3><span class="what">Vezmi kartu, nebo kartu z řady odhoď. Bez limitu.</span>' + placeWorkers('farm') + '</div>' +
+    var farm = '<section class="place" aria-label="Farma"><div class="place-head"><h3>Farma</h3><span class="what">Vezmi kartu, nebo spláchni celou řadu. Bez limitu.</span>' + placeWorkers('farm') + '</div>' +
       '<div class="cards">' + market + '<div class="deck" title="Balíček Farmy"><b>' + deckCount + '</b>v balíčku<br><span class="muted">odhoz: ' + game.discard.main.length + '</span></div></div></section>';
 
-    var spotsN = S.roasterySpots(game);
-    var taken = game.placements.filter(function (x) { return x.place === 'roastery'; });
-    var spots = '';
-    for (var i = 0; i < spotsN; i++) {
-      var t = taken[i];
-      if (t) {
-        var pl = game.players[t.player];
-        spots += '<span class="spot taken" style="background:' + pl.color + '" title="' + esc(pl.name) + '">' + esc(pl.name.charAt(0).toUpperCase()) + '</span>';
-      } else spots += '<span class="spot" title="Volné místo"></span>';
-    }
+    var taken = game.placements.filter(function (x) { return x.place === 'roastery'; }).map(function (x) { return x.player; });
+    var spots = game.players.map(function (pl) {
+      var used = taken.indexOf(pl.id) >= 0;
+      return '<span class="spot' + (used ? ' taken' : '') + '" style="--c:' + pl.color + '" title="' + esc(pl.name) + (used ? ': v tomto kole už pražil' : ': může pražit') + '">' +
+        '</span>';
+    }).join('');
     var pub = game.publicRecipes.length ? game.publicRecipes.map(function (r) { return cardHTML(r.card, { owner: r.owner }); }).join('') : '<div class="card slot-empty">žádný</div>';
-    var roastery = '<section class="place" aria-label="Pražírna"><div class="place-head"><h3>Pražírna</h3><span class="what">Upraž šarži. ' + spotsN + (spotsN === 1 ? ' místo' : spotsN < 5 ? ' místa' : ' míst') + ', max. 1 barista od hráče.</span></div>' +
-      '<div class="roastery-row"><div><div class="sublabel">Místa</div><div class="spots">' + spots + '</div></div>' +
+    var roastery = '<section class="place" aria-label="Pražírna"><div class="place-head"><h3>Pražírna</h3><span class="what">Upraž šarži. Každý hráč má jedno vlastní místo, takže praží jednou za kolo.</span></div>' +
+      '<div class="roastery-row"><div><div class="sublabel">Místa hráčů</div><div class="spots">' + spots + '</div></div>' +
       '<div><div class="sublabel">Veřejné recepty (soupeři platí majiteli 1 bod)</div><div class="cards">' + pub + '</div></div></div></section>';
 
     var custs = game.customers.map(function (id) {
@@ -1349,11 +1437,13 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     var out = '';
     for (var k = 1; k < game.n; k++) {
       var p = game.players[(game.current + k) % game.n];
-      var recipes = p.recipes.length ? p.recipes.map(function (id) { return '<span class="chip" title="' + esc(C[id].desc) + '">' + esc(C[id].name) + '</span>'; }).join('') : '–';
+      var recipes = p.recipes.length ? p.recipes.map(function (id) { return '<span class="chip chip-recipe" title="' + esc(C[id].desc) + '">' + esc(C[id].name) + '</span>'; }).join('') : '–';
       var equip = p.equipment.length ? p.equipment.map(function (id) { return '<span class="chip">' + esc(C[id].name) + '</span>'; }).join('') : '–';
+      var bl = p.batches.map(function (b) {
+        return '<li>' + tokenIcon(p.color, b, 20) + '<span>' + xy(b) + ' <small>' + (b.roasted ? (S.isResting(game, b) ? 'upražená, odpočívá' : 'upražená') : 'neupražená') + '</small></span></li>';
+      }).join('');
       out += '<article class="other" style="--pc:' + p.color + '"><h4>' + esc(p.name) + '<span class="score">' + pts(p.score) + '</span></h4>' +
-        boardSVG(p, { cell: 20, axes: false, id: 'o' + p.id }) +
-        '<div class="meta"><div><b>Recepty</b><span class="chips">' + recipes + '</span></div>' +
+        '<div class="meta"><ul class="batch-list small">' + bl + '</ul><div><b>Recepty</b><span class="chips">' + recipes + '</span></div>' +
         '<div><b>Vybavení</b><span class="chips">' + equip + '</span></div>' +
         '<div><b>Obsloužení zákazníci</b>' + p.served + '</div></div></article>';
     }
@@ -1423,13 +1513,15 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
         if (!id) return '';
         var c = C[id];
         var detail = c.type === 'equipment' ? 'Vybavení, ' + S.PREP[c.prep] : TYPE_LABEL[c.type] + ', ' + S.effectText(c);
-        return '<div class="row-opt"><div class="info"><b>' + esc(c.name) + '</b><small>' + esc(detail) + '</small></div>' +
-          '<button class="btn" data-act="take" data-idx="' + i + '">Vzít</button><button class="btn btn-ghost" data-act="discard" data-idx="' + i + '">Odhodit</button></div>';
+        return '<div class="row-opt"><span class="tsw t-' + c.type + '" aria-hidden="true"></span><div class="info"><b>' + esc(c.name) + '</b><small>' + esc(detail) + '</small></div>' +
+          '<button class="btn" data-act="take" data-idx="' + i + '">Vzít</button></div>';
       }).join('');
       var canDeck = game.decks.main.length || game.discard.main.length;
       rows += '<div class="row-opt"><div class="info"><b>Balíček</b><small>Lízneš kartu naslepo.</small></div>' +
         '<button class="btn" data-act="take" data-idx="deck"' + (canDeck ? '' : ' disabled') + '>Líznout naslepo</button></div>';
-      return err + '<h3>Farma</h3><p class="sub">Vezmi jednu kartu, nebo jednu z řady odhoď.</p><div>' + rows + '</div>' +
+      rows += '<div class="row-opt"><div class="info"><b>Spláchnout řadu</b><small>Všechny karty z řady jdou do odhozu a vyloží se ' + S.MARKET_SIZE + ' nové. Kartu si nebereš.</small></div>' +
+        '<button class="btn btn-ghost" data-act="flush">Spláchnout</button></div>';
+      return err + '<h3>Farma</h3><p class="sub">Vezmi jednu kartu, nebo spláchni celou řadu.</p><div>' + rows + '</div>' +
         '<div class="panel-foot"><button class="btn btn-ghost" data-act="back">Zpět</button></div>';
     }
 
@@ -1480,8 +1572,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 
     // idle: choose a place
     var places = [
-      ['farm', 'Farma', 'Vezmi nebo odhoď kartu.'],
-      ['roastery', 'Pražírna', 'Upraž šarži.'],
+      ['farm', 'Farma', 'Vezmi kartu, nebo spláchni řadu.'],
+      ['roastery', 'Pražírna', 'Upraž šarži. Jednou za kolo.'],
       ['cafe', 'Kavárna', 'Prodej upraženou kávu.']
     ];
     var modeOf = { farm: 'farm', roastery: 'roast', cafe: 'sell' };
@@ -1562,12 +1654,12 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       case 'rules': openRules(); break;
       case 'newgame': confirmNew(); break;
       case 'again': startGame(game.players.map(function (p) { return { name: p.name, color: p.color }; })); break;
-      case 'home': game = null; remove(SAVE_KEY); render(); break;
+      case 'home': goHomeFromGame(); break;
       case 'mode': setMode(d.mode); break;
       case 'back': ui.mode = null; ui.batch = null; ui.error = null; render(); break;
       case 'pass': run(function () { S.passTurn(game); }); break;
       case 'take': run(function () { S.farmTake(game, d.idx === 'deck' ? 'deck' : { market: Number(d.idx) }); }); break;
-      case 'discard': run(function () { S.farmDiscard(game, Number(d.idx)); }); break;
+      case 'flush': run(function () { S.farmFlush(game); }); break;
       case 'proc': run(function () { S.resolveProcessing(game, d.batch); }); break;
       case 'recipe': run(function () { S.resolveRecipe(game, d.where); }); break;
       case 'pickbatch': ui.batch = d.batch; ui.error = null; render(); break;
@@ -1600,19 +1692,30 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     if (e.target === rulesDlg || e.target.closest('[data-close-rules]')) rulesDlg.close();
   });
 
-  function confirmNew() {
-    if (!confirmDlg.showModal) { game = null; remove(SAVE_KEY); render(); return; }
-    confirmDlg.returnValue = '';
-    confirmDlg.showModal();
-  }
-  confirmDlg.addEventListener('close', function () {
-    if (confirmDlg.returnValue === 'ok') {
-      if (game) ui.names = game.players.map(function (p) { return p.name; }).concat(['', '', '', '', '']).slice(0, 5);
-      if (game) ui.count = game.n;
-      game = null;
-      remove(SAVE_KEY);
-      render();
+  // Buttons only (no <form method="dialog">): sandboxed frames block form submission.
+  function goHomeFromGame() {
+    if (game) {
+      ui.names = game.players.map(function (p) { return p.name; }).concat(['', '', '', '', '']).slice(0, 5);
+      ui.count = game.n;
     }
+    game = null;
+    ui.mode = null; ui.batch = null; ui.error = null;
+    remove(SAVE_KEY);
+    hideToast();
+    render();
+  }
+  function confirmNew() {
+    if (!confirmDlg.showModal) { goHomeFromGame(); return; }
+    confirmDlg.showModal();
+    var keep = confirmDlg.querySelector('[data-confirm="cancel"]');
+    if (keep) keep.focus();
+  }
+  confirmDlg.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-confirm]');
+    if (!b && e.target !== confirmDlg) return;
+    var ok = b && b.dataset.confirm === 'ok';
+    confirmDlg.close();
+    if (ok) goHomeFromGame();
   });
 
   var toastEl = document.getElementById('toast');
