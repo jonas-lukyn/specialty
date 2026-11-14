@@ -1,12 +1,8 @@
-<!doctype html>
-<html lang="cs">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>SPECIALTY – pražírna výběrové kávy</title>
-  <meta name="description" content="Desková hra o pražírně výběrové kávy pro 2–5 hráčů u jednoho počítače.">
-  <style>
-/* Archivo by Omnibus-Type, SIL Open Font License 1.1 – variable width + weight */
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>SPECIALTY</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Archivo (SIL Open Font License 1.1, see OFL.txt) – variable width + weight */
 @font-face {
   font-family: 'Archivo';
   font-style: normal;
@@ -406,10 +402,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
 
-  </style>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cellipse cx='16' cy='16' rx='11' ry='14' fill='%234a2d1e'/%3E%3Cpath d='M16 3c-4 6 4 20 0 26' stroke='%23e8e8e1' stroke-width='2.4' fill='none'/%3E%3C/svg%3E">
-</head>
-<body>
+</style>
+
   <div id="app" aria-live="polite"></div>
   <div id="toast" role="status" aria-live="polite"></div>
 
@@ -438,18 +432,18 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       <p>Světlý žeton = neupražená káva, může se hýbat. Plný žeton s tmavým okrajem = upražená káva, už se nehýbe a dá se prodat.</p>
 
       <h3>Tvůj tah</h3>
-      <p>Máš <b>2 akce</b>. Každá akce znamená poslat baristu na jedno ze tří míst. Na Farmu a do Kavárny můžeš poslat oba baristy, do Pražírny jen jednoho – máš tam jedno vlastní místo. Po kole se baristé vracejí a začíná další hráč v pořadí.</p>
+      <p>Máš <b>2 akce</b>. Každá akce znamená poslat baristu na jedno ze tří míst. Na Farmu a do Kavárny můžeš poslat oba baristy, do Pražírny jen jednoho – máš tam jedno vlastní místo. Po kole se baristé vracejí a další kolo začíná další hráč v pořadí. Ve dvou hráčích začíná pořád stejný hráč, takže se pravidelně střídáte po jednom tahu.</p>
 
       <h3>Farma</h3>
       <p>Na Farmě leží vždy 4 karty. Vezmi jednu z nich, nebo lízni naslepo z balíčku. Místo toho můžeš celou řadu spláchnout: všechny 4 karty jdou do odhozu a vyloží se nové (kartu si přitom nebereš).</p>
       <ul>
         <li><b>Zpracování</b> se použije hned: posune jednu tvou neupraženou šarži.</li>
-        <li><b>Recept pražení</b> je trvalý. Buď si ho necháš (používáš ho jen ty), nebo ho dáš na Pražírnu – pak ho může použít kdokoli a soupeři ti za každé použití platí 1 bod. Na Pražírně leží nejvýš 2 recepty, třetí vytlačí nejstarší.</li>
+        <li><b>Recept pražení</b> je trvalý. Buď si ho necháš (používáš ho jen ty), nebo ho dáš na Pražírnu – pak ho může použít kdokoli a pokaždé, když ho použije soupeř, dostaneš 1 bod (soupeři se nic neodečítá). Na Pražírně leží nejvýš 2 recepty, třetí vytlačí nejstarší.</li>
         <li><b>Vybavení</b> je trvalé a při prodeji dává +1 bod, když sedí s přípravou, kterou chce zákazník.</li>
       </ul>
 
       <h3>Pražírna</h3>
-      <p>Každý hráč má v Pražírně jedno vlastní místo, takže praží jednou za kolo a nikdo ho nemůže zablokovat. Upraž jednu šarži: základním pražením (bez posunu), svým receptem, nebo veřejným receptem za 1 bod jeho majiteli. Upražená káva musí odpočinout – ve stejném tahu ji prodat nemůžeš.</p>
+      <p>Každý hráč má v Pražírně jedno vlastní místo, takže praží jednou za kolo a nikdo ho nemůže zablokovat. Upraž jednu šarži: základním pražením (bez posunu), svým receptem, nebo veřejným receptem – když není tvůj, jeho majitel dostane 1 bod a tobě se nic neodečte. Upražená káva musí odpočinout – ve stejném tahu ji prodat nemůžeš.</p>
 
       <h3>Kavárna</h3>
       <p>Prodej upraženou šarži.</p>
@@ -480,7 +474,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     </div>
   </dialog>
 
-  <script>
+<script>
 /*
  * SPECIALTY – game engine (rules v2).
  * Pure game logic, no DOM. Works as a classic browser script (window.Specialty)
@@ -744,9 +738,9 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       opts.push({ kind: 'own', card: id, owner: p.id, cost: 0, ok: true });
     });
     s.publicRecipes.forEach(function (r) {
-      var cost = r.owner === p.id ? 0 : 1;
-      var ok = cost === 0 || p.score >= 1;
-      opts.push({ kind: 'public', card: r.card, owner: r.owner, cost: cost, ok: ok, reason: ok ? null : 'Nemáš bod na zaplacení.' });
+      // using someone else's public recipe costs nothing; its owner gains 1 point
+      var reward = r.owner === p.id ? 0 : 1;
+      opts.push({ kind: 'public', card: r.card, owner: r.owner, cost: 0, reward: reward, ok: true, reason: null });
     });
     return opts;
   }
@@ -805,13 +799,19 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       s.placements = [];
       if (s.endTriggered) { finishGame(s); return; }
       s.round += 1;
-      s.startPlayer = (s.startPlayer + 1) % s.n;
+      s.startPlayer = nextStartPlayer(s);
       s.current = s.startPlayer;
       s.turnsTaken = 0;
       log(s, 'Kolo ' + s.round + '. Začíná ' + current(s).name + '.');
     } else {
       s.current = (s.current + 1) % s.n;
     }
+  }
+
+  // The start player rotates each round. With 2 players it stays fixed,
+  // otherwise one player would get two turns in a row (A B | B A).
+  function nextStartPlayer(s) {
+    return s.n > 2 ? (s.startPlayer + 1) % s.n : s.startPlayer;
   }
 
   function finishGame(s) {
@@ -933,11 +933,10 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     b.roastedTurn = s.turnId;
     placeBarista(s, 'roastery');
     var msg = p.name + ' praží šarži ' + b.id + ' ' + how + (opt.card ? ': ' + from + ' → ' + coords(b) : ' na ' + coords(b)) + '.';
-    if (opt.cost) {
+    if (opt.reward) {
       var owner = s.players[opt.owner];
-      p.score -= opt.cost;
-      owner.score += opt.cost;
-      msg += ' Platí 1 bod hráči ' + owner.name + '.';
+      owner.score += opt.reward;
+      msg += ' ' + owner.name + ' dostává za recept 1 bod.';
     }
     log(s, msg, p.id);
     checkEnd(s);
@@ -997,13 +996,13 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     farmTake: farmTake, farmFlush: farmFlush, MARKET_SIZE: MARKET_SIZE,
     resolveProcessing: resolveProcessing, resolveRecipe: resolveRecipe,
     roast: roast, sell: sell, passTurn: passTurn,
-    current: current, unroasted: unroasted, sellable: sellable, isResting: isResting,
+    nextStartPlayer: nextStartPlayer, current: current, unroasted: unroasted, sellable: sellable, isResting: isResting,
     hasPrep: hasPrep, moved: moved, effectText: effectText, findBatch: findBatch
   };
 });
 
-  </script>
-  <script>
+</script>
+<script>
 /* SPECIALTY – hot-seat UI. Depends on engine.js (window.Specialty). */
 (function () {
   'use strict';
@@ -1353,7 +1352,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     if (game.gameOver) next = '';
     else if (game.endTriggered) next = '<span class="order-next">Toto je poslední kolo.</span>';
     else {
-      var np = game.players[(game.startPlayer + 1) % game.n];
+      var np = game.players[S.nextStartPlayer(game)];
       next = '<span class="order-next">Kolo ' + (game.round + 1) + ' začne <i style="background:' + np.color + '"></i><b>' + esc(np.name) + '</b></span>';
     }
     return '<div class="order"><span class="order-label">Pořadí v kole ' + game.round + '</span>' +
@@ -1423,7 +1422,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     var pub = game.publicRecipes.length ? game.publicRecipes.map(function (r) { return cardHTML(r.card, { owner: r.owner }); }).join('') : '<div class="card slot-empty">žádný</div>';
     var roastery = '<section class="place" aria-label="Pražírna"><div class="place-head"><h3>Pražírna</h3><span class="what">Upraž šarži. Každý hráč má jedno vlastní místo, takže praží jednou za kolo.</span></div>' +
       '<div class="roastery-row"><div><div class="sublabel">Místa hráčů</div><div class="spots">' + spots + '</div></div>' +
-      '<div><div class="sublabel">Veřejné recepty (soupeři platí majiteli 1 bod)</div><div class="cards">' + pub + '</div></div></div></section>';
+      '<div><div class="sublabel">Veřejné recepty (když je použije soupeř, majitel dostane 1 bod)</div><div class="cards">' + pub + '</div></div></div></section>';
 
     var custs = game.customers.map(function (id) {
       return cardHTML(id, { attrs: id ? ' data-hl="' + id + '"' : '' });
@@ -1505,7 +1504,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       return err + '<h3>Recept: ' + esc(rc.name) + '</h3><p class="sub">Při pražení posune šarži: ' + S.effectText(rc) + '.</p>' +
         '<p class="desc">' + esc(rc.desc) + '</p><div class="opts">' +
         '<button class="opt" data-act="recipe" data-where="own"><b>Nechat si ho</b><small>Používáš ho jen ty, při každém svém pražení.</small></button>' +
-        '<button class="opt" data-act="recipe" data-where="public"><b>Dát ho na Pražírnu</b><small>Může ho použít kdokoli. Soupeři ti za každé použití zaplatí 1 bod.' + warn + '</small></button></div>';
+        '<button class="opt" data-act="recipe" data-where="public"><b>Dát ho na Pražírnu</b><small>Může ho použít kdokoli. Pokaždé, když ho použije soupeř, dostaneš 1 bod.' + warn + '</small></button></div>';
     }
 
     if (ui.mode === 'farm') {
@@ -1539,7 +1538,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
         if (opt.kind === 'basic') { title = 'Základní pražení'; small = 'Zůstane na ' + xy(to) + '.'; }
         else {
           title = esc(C[opt.card].name);
-          var who = opt.kind === 'own' ? 'tvůj recept' : (opt.owner === p.id ? 'tvůj recept na Pražírně' : 'recept hráče ' + esc(game.players[opt.owner].name) + ', zaplatíš 1 bod');
+          var who = opt.kind === 'own' ? 'tvůj recept' : (opt.owner === p.id ? 'tvůj recept na Pražírně' : 'recept hráče ' + esc(game.players[opt.owner].name) + ', ten za to dostane 1 bod, tobě se nic neodečte');
           small = who + '. ' + xy(b) + ' → ' + xy(to) + '.' + (opt.ok ? '' : ' ' + esc(opt.reason));
         }
         return '<button class="opt" data-act="roast" data-i="' + i + '" data-pv-on="r-' + i + '"' + (opt.ok ? '' : ' disabled') + '><b>' + title + '</b><small>' + small + '</small></button>';
@@ -1764,6 +1763,6 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   render();
 })();
 
-  </script>
-</body>
-</html>
+</script>
+
+</body></html>
