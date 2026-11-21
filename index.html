@@ -649,8 +649,8 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   var ROASTERIES = [
     { id: 'craft', name: 'Řemeslná pražírna', short: 'Základní pražení smí posunout Tělo o 1 nahoru, nebo dolů. Cizí recepty nepoužíváš.',
       desc: 'Pražíš po svém. Při základním pražení si vybereš: nechat kávu, jak je, nebo posunout Tělo o 1 nahoru či dolů. Veřejné recepty ostatních hráčů ale používat nesmíš (své recepty ano).' },
-    { id: 'ferment', name: 'Fermentační laboratoř', short: 'Zpracování smíš použít obráceně a na obě šarže najednou.',
-      desc: 'Experimentuješ s kvašením. Kartu zpracování smíš použít v opačném směru (Ovocnost +1 jako Ovocnost −1). Smíš ji také použít na obě své neupražené šarže najednou, u každé zvlášť normálně, nebo obráceně.' },
+    { id: 'ferment', name: 'Fermentační laboratoř', short: 'Zpracování smíš použít obráceně. Na obě šarže najednou za 2 akce.',
+      desc: 'Experimentuješ s kvašením. Kartu zpracování smíš použít v opačném směru (Ovocnost +1 jako Ovocnost −1). Smíš ji také použít na obě své neupražené šarže najednou, obě stejným směrem (obě normálně, nebo obě obráceně). To ale stojí 2 akce, tedy celý tah.' },
     { id: 'direct', name: 'Přímý obchod', short: 'Po prodeji si lízni 3 původy a 1 si vyber.',
       desc: 'Nakupuješ přímo od farmářů. Když prodáš kávu, lízneš si 3 karty původu, jednu si necháš jako novou šarži a ostatní odhodíš.' },
     { id: 'big', name: 'Velkopražírna', short: 'Jednou akcí upražíš obě šarže stejným způsobem.',
@@ -666,7 +666,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   ];
 
   // Variant switches used by the balance tests. Defaults = the rules of the game (chosen after bot tests, Nov 2026).
-  var TUNE = { rival: 'limited', rivalTokens: 5, ferment: 'twin', big: 'bothsame', directDraw: 3, popup: 'minus1', craft: 'nopublic', baristaEq: 1, baristaNoEq: 5 };
+  var TUNE = { rival: 'limited', rivalTokens: 5, ferment: 'twin2', big: 'bothsame', directDraw: 3, popup: 'minus1', craft: 'nopublic', baristaEq: 1, baristaNoEq: 5 };
   var ROASTERY = {};
   ROASTERIES.forEach(function (r) { ROASTERY[r.id] = r; });
 
@@ -1155,29 +1155,48 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   }
 
   /** reverse = Fermentační laboratoř uses the card in the opposite direction. */
+  /**
+   * reverse = Fermentační laboratoř uses the card in the opposite direction.
+   * twin = {batch, reverse}: the same card also moves the other unroasted batch
+   * (rules: same direction for both, costs 2 actions = the whole turn).
+   */
   function resolveProcessing(s, batchId, reverse, adjust, twin) {
     if (!s.pending || s.pending.kind !== 'processing') fail('Není co vyhodnotit.');
     var p = current(s);
     var b = findBatch(p, batchId);
     if (!b || b.roasted) fail('Kartu zpracování lze použít jen na neupraženou šarži.');
-    if (reverse && !(hasRoastery(p, 'ferment') && TUNE.ferment !== 'adjust')) fail('Obrácené zpracování umí jen Fermentační laboratoř.');
-    if (adjust && !(hasRoastery(p, 'ferment') && (TUNE.ferment === 'adjust' || TUNE.ferment === 'both'))) fail('Doladění umí jen Fermentační laboratoř.');
+    var ferment = hasRoastery(p, 'ferment');
+    if (reverse && !(ferment && TUNE.ferment !== 'adjust')) fail('Obrácené zpracování umí jen Fermentační laboratoř.');
+    if (adjust && !(ferment && (TUNE.ferment === 'adjust' || TUNE.ferment === 'both'))) fail('Doladění umí jen Fermentační laboratoř.');
+    var b2 = null;
+    if (twin) {
+      if (!(ferment && (TUNE.ferment === 'twin' || TUNE.ferment === 'twin2'))) fail('Zpracovat obě šarže najednou umí jen Fermentační laboratoř.');
+      b2 = findBatch(p, twin.batch);
+      if (!b2 || b2.roasted || b2 === b) fail('Druhá šarže musí být jiná neupražená šarže.');
+      if (TUNE.ferment === 'twin2') {
+        if (!!twin.reverse !== !!reverse) fail('Obě šarže se posunou stejným směrem.');
+        if (s.actionsLeft < 2) fail('Na obě šarže najednou potřebuješ 2 akce, tedy celý tah.');
+      }
+    }
     var c = CARDS[s.pending.card];
     var from = coords(b);
     var to = moved(b, reverse ? reversed(c) : c);
     if (adjust) to = moved(to, { dx: DIRS[adjust][0], dy: DIRS[adjust][1] });
     b.x = to.x; b.y = to.y;
-    if (twin) {
-      // variant: the same card also processes another unroasted batch
-      if (!(hasRoastery(p, 'ferment') && TUNE.ferment === 'twin')) fail('Jen Fermentační laboratoř.');
-      var b2 = findBatch(p, twin.batch);
-      if (!b2 || b2.roasted || b2 === b) fail('Druhá šarže musí být jiná neupražená šarže.');
-      var to3 = moved(b2, twin.reverse ? reversed(c) : c);
-      log(s, c.name + (twin.reverse ? ' (obráceně)' : '') + ': i šarže ' + b2.id + ' ' + coords(b2) + ' → (' + to3.x + ', ' + to3.y + ').', p.id);
-      b2.x = to3.x; b2.y = to3.y;
+    var msg = c.name + (reverse ? ' (obráceně)' : '') + ': šarže ' + b.id + ' ' + from + ' → ' + coords(b);
+    if (b2) {
+      var from2 = coords(b2);
+      var to2 = moved(b2, twin.reverse ? reversed(c) : c);
+      b2.x = to2.x; b2.y = to2.y;
+      msg += ', šarže ' + b2.id + ' ' + from2 + ' → ' + coords(b2);
     }
     s.discard.main.push(c.id);
-    log(s, c.name + (reverse ? ' (obráceně)' : '') + ': šarže ' + b.id + ' ' + from + ' → ' + coords(b) + '.', p.id);
+    log(s, msg + (b2 && TUNE.ferment === 'twin2' ? ' (obě šarže, 2 akce).' : '.'), p.id);
+    if (b2 && TUNE.ferment === 'twin2') {
+      // the second batch costs the second action of the turn
+      placeBarista(s, 'farm');
+      s.actionsLeft -= 1;
+    }
     finishAction(s);
   }
 
@@ -1929,17 +1948,21 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
         var same = m.to.x === m.b.x && m.to.y === m.b.y;
         label = 'Šarže ' + m.b.id + (m.rev ? ' obráceně' : '');
         small = xy(m.b) + ' → ' + xy(m.to) + (same ? ', na okraji se nepohne' : '');
+      } else if (ch.cost2) {
+        label = 'Obě šarže' + (ch.moves[0].rev ? ' obráceně' : '') + ' <span class="pts">2 akce</span>';
+        small = ch.moves.map(function (m) { return xy(m.b) + ' → ' + xy(m.to); }).join(' · ');
       } else {
         label = 'Obě: ' + ch.moves.map(function (m) { return m.b.id + (m.rev ? ' obráceně' : ''); }).join(' + ');
         small = ch.moves.map(function (m) { return xy(m.b) + ' → ' + xy(m.to); }).join(' · ');
       }
-      var b = abtn(' data-act="proc" data-i="' + i + '" data-pv-on="' + ch.key + '"', label, small);
+      var b = abtn(' data-act="proc" data-i="' + i + '" data-pv-on="' + ch.key + '"', label, small, ch.off,
+        ch.off ? 'Na obě šarže potřebuješ 2 akce. Šlo by to jen jako první akce tahu.' : ch.cost2 ? 'Stojí i tvou druhou akci, tah tím skončí.' : '');
       if (ch.group === 'one') ones += b; else twos += b;
     });
     return '<div class="pending-box"><div class="pending-card">' + cardHTML(game.pending.card, { small: true }) + '<div><h4>' + esc(card.name) + '</h4>' +
       '<p class="sub">Zpracování: ' + S.effectText(card) + '. Kterou šarži posune?</p><p class="desc">' + esc(card.desc) + '</p></div></div>' +
       '<div class="act-btns">' + ones + '</div>' +
-      (twos ? '<div class="sublabel">Fermentační laboratoř: obě šarže najednou</div><div class="act-btns">' + twos + '</div>' : '') +
+      (twos ? '<div class="sublabel">Fermentační laboratoř: obě šarže najednou, stejným směrem. Stojí 2 akce, tedy celý tah.</div><div class="act-btns">' + twos + '</div>' : '') +
       '<p class="note">Můžeš kliknout i přímo na své zrno na mapě.</p></div>';
   }
 
@@ -2133,12 +2156,20 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     var ferment = S.hasRoastery(p, 'ferment');
     var canRev = ferment && S.TUNE.ferment !== 'adjust';
     var canTwin = ferment && S.TUNE.ferment === 'twin';
+    var twin2 = ferment && S.TUNE.ferment === 'twin2';
     var ub = S.unroasted(p);
     var out = [];
     ub.forEach(function (b) {
       out.push({ key: 'b-' + b.id, group: 'one', moves: [{ b: b, to: S.moved(b, card), rev: false }], args: [b.id, false, null, null] });
       if (canRev) out.push({ key: 'b-' + b.id + 'r', group: 'one', moves: [{ b: b, to: S.moved(b, rev), rev: true }], args: [b.id, true, null, null] });
     });
+    if (twin2 && ub.length >= 2) {
+      [false, true].forEach(function (r) {
+        out.push({ key: 'tw-' + (+r) + (+r), group: 'two', cost2: true, off: game.actionsLeft < 2,
+          moves: [{ b: ub[0], to: S.moved(ub[0], r ? rev : card), rev: r }, { b: ub[1], to: S.moved(ub[1], r ? rev : card), rev: r }],
+          args: [ub[0].id, r, null, { batch: ub[1].id, reverse: r }] });
+      });
+    }
     if (canTwin && ub.length >= 2) {
       [false, true].forEach(function (r1) {
         [false, true].forEach(function (r2) {

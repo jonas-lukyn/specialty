@@ -19,7 +19,7 @@ Digitální prototyp deskové hry o pražírně výběrové kávy. Hraje se v pr
 | Pražírna | Schopnost |
 |---|---|
 | Řemeslná pražírna | Základní pražení smí posunout Tělo o 1 nahoru, nebo dolů. Veřejné recepty ostatních nepoužívá. |
-| Fermentační laboratoř | Kartu zpracování smí použít obráceně a smí ji použít na obě své neupražené šarže najednou. |
+| Fermentační laboratoř | Kartu zpracování smí použít obráceně. Smí ji použít i na obě své neupražené šarže najednou, obě stejným směrem – to ale stojí 2 akce (celý tah). |
 | Přímý obchod | Po prodeji si lízne 3 původy a 1 si nechá jako novou šarži. |
 | Velkopražírna | Jednou akcí upraží obě šarže, obě stejným způsobem. |
 | Pop-up stánek | Kávu smí prodat hned po upražení, takový prodej ale dá o 1 bod méně. |
