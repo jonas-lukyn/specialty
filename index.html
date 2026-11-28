@@ -515,7 +515,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
         <button class="btn" data-close-rules>Zavřít</button>
       </div>
 
-      <p class="rules-lead">Každý vede malou pražírnu výběrové kávy. Kávu z různých zemí zpracováním a pražením ladíš tak, aby chutnala přesně podle přání zákazníků. Kdo první získá <b>20 bodů</b>, spustí konec hry.</p>
+      <p class="rules-lead">Každý vede malou pražírnu výběrové kávy. Kávu z různých zemí zpracováním a pražením ladíš tak, aby chutnala přesně podle přání zákazníků. Kdo první získá potřebný počet bodů (<b>2 hráči 16, 3 hráči 20, 4 hráči 16, 5 hráčů 14</b>), spustí konec hry.</p>
 
       <h3>Chuťová mapa</h3>
       <p>Všichni hrají na jedné společné mřížce 7×7. Vodorovně je <b>Ovocnost</b> (doprava víc), svisle <b>Tělo</b> (nahoru plnější). Každý hráč na ní má dvě šarže kávy – žetony ve své barvě s čísly 1 a 2. Na jednom poli může stát víc žetonů, navzájem se neblokují. Pozice se zapisuje jako (Ovocnost, Tělo). Růžové rámečky ukazují, kde na mřížce sedí chuť zákazníků z Kavárny. Šarže nikdy nevyjede z mřížky – posun se zastaví na okraji.</p>
@@ -551,7 +551,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
       <dl class="glossary" id="roastery-rules"></dl>
 
       <h3>Konec hry</h3>
-      <p>Jakmile má někdo 20 bodů, kolo se dohraje, aby měli všichni stejný počet tahů. Vyhrává nejvíc bodů, při shodě je remíza.</p>
+      <p>Jakmile má někdo potřebný počet bodů (2 hráči 16, 3 hráči 20, 4 hráči 16, 5 hráčů 14), kolo se dohraje, aby měli všichni stejný počet tahů. Vyhrává nejvíc bodů, při shodě je remíza.</p>
 
       <h3>Kávové pojmy</h3>
       <dl class="glossary">
@@ -583,6 +583,9 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   'use strict';
 
   var GOAL = 20;
+  // Points that end the game, by number of players (keeps playing time similar, bot analysis Nov 2026)
+  var GOALS = { 2: 16, 3: 20, 4: 16, 5: 14 };
+  function goalFor(n) { return GOALS[n] || GOAL; }
   var SIZE = 7;
   var MARKET_SIZE = 4;
   var PROCESSING_MULTIPLIER = 2; // each processing card exists 2x its listed copies
@@ -800,6 +803,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
     var seed = (opts.seed === undefined ? Math.floor(Math.random() * 4294967296) : opts.seed) >>> 0;
     var s = {
       version: 4,
+      goal: opts.goal || goalFor(opts.players.length),
       phase: 'play',
       draft: null,
       rng: seed,
@@ -1031,10 +1035,11 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 
   function checkEnd(s) {
     if (s.endTriggered) return;
-    var hit = s.players.filter(function (p) { return p.score >= GOAL; });
+    var goal = s.goal || GOAL;
+    var hit = s.players.filter(function (p) { return p.score >= goal; });
     if (hit.length) {
       s.endTriggered = true;
-      log(s, hit.map(function (p) { return p.name; }).join(' a ') + ' má ' + GOAL + ' bodů. Kolo se dohraje a hra skončí.');
+      log(s, hit.map(function (p) { return p.name; }).join(' a ') + ' má ' + goal + ' bodů. Kolo se dohraje a hra skončí.');
     }
   }
 
@@ -1402,7 +1407,7 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
   }
 
   return {
-    GOAL: GOAL, SIZE: SIZE, PREP: PREP, CARDS: CARDS, DECK_IDS: DECK_IDS, VIP_POINTS: VIP_POINTS,
+    GOAL: GOAL, GOALS: GOALS, goalFor: goalFor, SIZE: SIZE, PREP: PREP, CARDS: CARDS, DECK_IDS: DECK_IDS, VIP_POINTS: VIP_POINTS,
     ROASTERIES: ROASTERIES, ROASTERY: ROASTERY, DIRS: DIRS, TUNE: TUNE,
     createGame: createGame, pickRoastery: pickRoastery, roasteryOf: roasteryOf, hasRoastery: hasRoastery,
     roasterySpotsOf: roasterySpotsOf, saleOptionsAt: saleOptionsAt, equipmentBlock: equipmentBlock,
@@ -1777,15 +1782,16 @@ dialog::backdrop { background: rgba(32, 33, 29, .55); }
 
   function renderTrack() {
     var cells = '';
-    for (var n = 0; n <= S.GOAL; n++) {
+    var goal = game.goal || S.GOAL;
+    for (var n = 0; n <= goal; n++) {
       var dots = '';
       game.players.forEach(function (pl) {
-        if (Math.min(pl.score, S.GOAL) === n) dots += '<span class="tdot" style="background:' + pl.color + '" title="' + esc(pl.name) + ': ' + pl.score + '"></span>';
+        if (Math.min(pl.score, goal) === n) dots += '<span class="tdot" style="background:' + pl.color + '" title="' + esc(pl.name) + ': ' + pl.score + '"></span>';
       });
-      cells += '<div class="tcell' + (n === S.GOAL ? ' goal' : '') + '"><span class="tdots">' + dots + '</span><span class="tn">' + n + '</span></div>';
+      cells += '<div class="tcell' + (n === goal ? ' goal' : '') + '"><span class="tdots">' + dots + '</span><span class="tn">' + n + '</span></div>';
     }
-    var ending = game.endTriggered && !game.gameOver ? '<p class="ending">Někdo má ' + S.GOAL + ' bodů. Dohrává se toto kolo, pak hra končí.</p>' : '';
-    return '<div class="track" aria-hidden="true">' + cells + '</div>' + renderOrder() + ending;
+    var ending = game.endTriggered && !game.gameOver ? '<p class="ending">Někdo má ' + goal + ' bodů. Dohrává se toto kolo, pak hra končí.</p>' : '';
+    return '<div class="track" style="grid-template-columns: repeat(' + (goal + 1) + ', 1fr)" aria-hidden="true">' + cells + '</div>' + renderOrder() + ending;
   }
 
   // Order of play in this round (the start player rotates every round).
